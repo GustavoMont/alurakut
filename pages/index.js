@@ -35,7 +35,7 @@ export default function Home() {
         <div className="welcomeArea" style={{ gridArea: 'welcomeArea' }}>
           <Box>Bem Vindo</Box>
         </div>
-        <div className="profileRelationsArea" style={{ gridArea: 'relationsArea' }}>
+        <div className="profileRelationsArea"  style={{ gridArea: 'relationsArea' }}>
 
           <ProfileRelationsBoxWrapper>
 
