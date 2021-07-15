@@ -6,6 +6,7 @@ const BASE_URL = 'http://alurakut.vercel.app/';
 const v = '1';
 
 
+
 function Link({ href, children, ...props }) {
   return (
     <NextLink href={href} passHref>
@@ -52,11 +53,15 @@ export function AlurakutMenu({ githubUser }) {
     </AlurakutMenu.Wrapper>
   )
 }
+
 AlurakutMenu.Wrapper = styled.header`
   width: 100%;
   background-color: #308BC5;
-
   .alurakutMenuProfileSidebar {
+    background: white;
+    position: fixed;
+    /* Overflow para quando a tela tiver com zoom no celular */
+    overflow-y: scroll;
     background: white;
     position: fixed;
     z-index: 100;
@@ -79,6 +84,7 @@ AlurakutMenu.Wrapper = styled.header`
     a {
       font-size: 18px;
     }
+    
     .boxLink {
       font-size: 18px;
       color: #2E7BB4;
@@ -171,10 +177,10 @@ function AlurakutMenuProfileSidebar({ githubUser }) {
   return (
     <div className="alurakutMenuProfileSidebar">
       <div>
-        <img src={`https://github.com/${githubUser}.png`} style={{ borderRadius: '8px' }} />
+        <img src={`https://github.com/${githubUser}.png`} className="avatar" style={{ borderRadius: '8px' }} />
         <hr />
-        <p>
-          <a className="boxLink" href={`/user/${githubUser}`}>
+        <p className="pLink">
+          <a className="boxLink novaClasse" href={`/user/${githubUser}`}>
             @{githubUser}
           </a>
         </p>

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Box from "../Box";
 
 export const ProfileRelationsBoxWrapper = styled(Box)`
-  overflow: auto;
+  overflow: hidden;
   ul {
     display: grid;
     grid-gap: 8px;

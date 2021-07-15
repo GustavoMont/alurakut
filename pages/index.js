@@ -27,12 +27,8 @@ function ProfileSideBar(props) {
 
 
 export default function Home() {
-  const [comunidades, setComunidades] = React.useState([{
-    id: "902u03u04393oi34",
-    title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }])
-
+  // Funções importante ===============================================
+  
   const comunityList = (item) => {
     return (
       <li key={item.id}>
@@ -43,7 +39,16 @@ export default function Home() {
       </li>
     )
   }
-
+  const followersList = (item) => {
+    return (
+      <li key={item.login}>
+        <a href={`/users/${item.login}`} key={item.login}>
+          <img src={`https://github.com/${item.login}.png`} />
+          <span>{item.login}</span>
+        </a>
+      </li>
+    )
+  } 
   const friendsList = (item) => {
     return (
       <li key={item}>
@@ -54,7 +59,13 @@ export default function Home() {
       </li>
     )
   }
-
+  
+  // Listas e outras informações ===============================================
+  const [comunidades, setComunidades] = React.useState([{
+    id: "902u03u04393oi34",
+    title: 'Eu odeio acordar cedo',
+    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
+  }])
   const githubUser = 'GustavoMont'
   const misAmi =
     [
@@ -65,11 +76,18 @@ export default function Home() {
       'felipefialho',
       'marcobrunodev'
     ]
+    const [seguidores, setSeguidores] = React.useState([])
+    
+    React.useEffect(() => {
+      fetch('https://api.github.com/users/gustavomont/followers')
+      .then( respostaServidor => respostaServidor.json())
+      .then( respostaConvertida => {setSeguidores(respostaConvertida)})
+    }, [])
 
   return (
     <>
-      <AlurakutMenu />
-      <MainGrid>
+      <AlurakutMenu githubUser={githubUser}/>
+      <MainGrid className="mainGrid">
         <div className="profileArea" style={{ gridArea: 'profileArea' }}>
           <ProfileSideBar githubUser={githubUser} />
         </div>
@@ -89,7 +107,7 @@ export default function Home() {
                 id: new Date().toISOString(),
                 title: dataForm.get('title'),
                 image: dataForm.get('image'),
-              }
+               }
               setComunidades([...comunidades, comunidade])
             }}>
               <div>
@@ -113,13 +131,17 @@ export default function Home() {
 
         </div>
         <div className="profileRelationsArea" style={{ gridArea: 'relationsArea' }}>
-
+          
           <ProfileRelationsBoxWrapper>
-            <RelationList type={`Comunidade`} content={comunityList} list={comunidades} />
+            <RelationList title={`Seguidores`} content={followersList} list={seguidores} />
+          </ProfileRelationsBoxWrapper>
+        
+          <ProfileRelationsBoxWrapper>
+            <RelationList title={`Pessoas da Comunidade`} content={friendsList} list={misAmi} />
           </ProfileRelationsBoxWrapper>
 
           <ProfileRelationsBoxWrapper>
-            <RelationList type={`Pessoas da Comunidade`} content={friendsList} list={misAmi} />
+            <RelationList title={`Comunidade`} content={comunityList} list={comunidades} />
           </ProfileRelationsBoxWrapper>
         </div>
 

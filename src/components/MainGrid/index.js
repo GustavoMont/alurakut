@@ -1,12 +1,13 @@
 import styled from "styled-components";
 
 const MainGrid = styled.main`
-
+  
   width: 100%;
   margin-left: auto;
   margin-right: auto;
   max-width: 500px;
   padding: 16px;
+  grid-gap: 10px;
   div{
     margin-bottom: 10px;
   }
@@ -19,7 +20,6 @@ const MainGrid = styled.main`
   @media(min-width: 860px) {
     max-width: 1110px;
     display: grid;
-    grid-gap: 10px;
     grid-template-areas: 
       "profileArea welcomeArea relationsArea";
     grid-template-columns: 160px 1fr 312px;
