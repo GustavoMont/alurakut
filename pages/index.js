@@ -34,7 +34,9 @@ export default function Home() {
       <li key={item.id}>
         <a href={`/users/${item.title}`}>
           <img src={item.image} />
-          <span>{item.title}</span>
+          <div className="spanBG" >
+            <span>{item.title}</span>
+          </div>
         </a>
       </li>
     )
@@ -44,7 +46,9 @@ export default function Home() {
       <li key={item.login}>
         <a href={`/users/${item.login}`} key={item.login}>
           <img src={`https://github.com/${item.login}.png`} />
-          <span>{item.login}</span>
+          <div className="spanBG">
+            <span>{item.login}</span>
+          </div>
         </a>
       </li>
     )
@@ -54,7 +58,9 @@ export default function Home() {
       <li key={item}>
         <a href={`/users/${item}`} key={item}>
           <img src={`https://github.com/${item}.png`} />
-          <span>{item}</span>
+          <div className="spanBG">
+            <span>{item}</span>
+          </div>
         </a>
       </li>
     )
@@ -63,8 +69,8 @@ export default function Home() {
   // Listas e outras informações ===============================================
   const [comunidades, setComunidades] = React.useState([{
     id: "902u03u04393oi34",
-    title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
+    title: 'Stackoverflow: salvando vidas desde 2008',
+    image: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.hebergementwebs.com%2Fdivers%25C3%25A3o%2Fprimeiro-de-abril-de-2021-as-melhores-piadas-da-web&psig=AOvVaw38sy3Z0GOoCUQxnL1BwntV&ust=1626448969151000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCOijsvWw5fECFQAAAAAdAAAAABAD'
   }])
   const githubUser = 'GustavoMont'
   const misAmi =
@@ -133,16 +139,18 @@ export default function Home() {
         <div className="profileRelationsArea" style={{ gridArea: 'relationsArea' }}>
           
           <ProfileRelationsBoxWrapper>
-            <RelationList title={`Seguidores`} content={followersList} list={seguidores} />
+            <RelationList title={`Comunidade`} content={comunityList} list={comunidades} />
           </ProfileRelationsBoxWrapper>
-        
+          
           <ProfileRelationsBoxWrapper>
             <RelationList title={`Pessoas da Comunidade`} content={friendsList} list={misAmi} />
           </ProfileRelationsBoxWrapper>
 
           <ProfileRelationsBoxWrapper>
-            <RelationList title={`Comunidade`} content={comunityList} list={comunidades} />
+            <RelationList title={`Seguidores`} content={followersList} list={seguidores} />
           </ProfileRelationsBoxWrapper>
+        
+
         </div>
 
       </MainGrid>
