@@ -1,10 +1,12 @@
-import styled from 'styled-components'
 import React from 'react';
+import nookies from 'nookies';
+import jwt  from 'jsonwebtoken';
 import MainGrid from '../src/components/MainGrid';
 import Box from '../src/components/Box';
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AluraCommons';
 import { ProfileRelationsBoxWrapper } from '../src/components/ProfileRelations';
 import RelationList from '../src/components/ProfileRelations/RealationList';
+
 
 
 function ProfileSideBar(props) {
@@ -26,14 +28,14 @@ function ProfileSideBar(props) {
 }
 
 
-export default function Home() {
+export default function Home(props) {
   // Funções importante ===============================================
-  
+  const githubUser = props.githubUser
   const comunityList = (item) => {
     return (
-      <li key={item.id}>
+      <li key={item.title}>
         <a href={`/users/${item.title}`}>
-          <img src={item.image} />
+          <img src={item.imageUrl} />
           <div className="spanBG" >
             <span>{item.title}</span>
           </div>
@@ -65,14 +67,14 @@ export default function Home() {
       </li>
     )
   }
-  
   // Listas e outras informações ===============================================
   const [comunidades, setComunidades] = React.useState([{
     id: "902u03u04393oi34",
-    title: 'Stackoverflow: salvando vidas desde 2008',
-    image: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.hebergementwebs.com%2Fdivers%25C3%25A3o%2Fprimeiro-de-abril-de-2021-as-melhores-piadas-da-web&psig=AOvVaw38sy3Z0GOoCUQxnL1BwntV&ust=1626448969151000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCOijsvWw5fECFQAAAAAdAAAAABAD'
+    title: 'Comunidade Padrao',
+    imageUrl: 'http://placehold.it/300x300'
   }])
-  const githubUser = 'GustavoMont'
+  
+  //const githubUser = 'GustavoMont'
   const misAmi =
     [
       'omariosouto',
@@ -88,8 +90,29 @@ export default function Home() {
       fetch('https://api.github.com/users/gustavomont/followers')
       .then( respostaServidor => respostaServidor.json())
       .then( respostaConvertida => {setSeguidores(respostaConvertida)})
-    }, [])
 
+      fetch('https://graphql.datocms.com/', {
+        method: 'POST',
+        headers: {
+          'Authorization': '773546e46f7d552f9f077f84760bd4' ,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'        
+        },
+        body: JSON.stringify({ "query": `query { 
+          allCommunities{ 
+            id
+            title 
+            imageUrl
+            creatorSlug
+          } 
+        }` })
+      })
+      .then((respostaServidor) => respostaServidor.json())
+      .then((respostaCovertida) => {
+        const allCommunities = respostaCovertida.data.allCommunities
+        setComunidades(allCommunities)
+      })
+    }, [])
   return (
     <>
       <AlurakutMenu githubUser={githubUser}/>
@@ -110,14 +133,31 @@ export default function Home() {
               const dataForm = new FormData(e.target);
               const comunidade =
               {
-                id: new Date().toISOString(),
                 title: dataForm.get('title'),
-                image: dataForm.get('image'),
-               }
-              setComunidades([...comunidades, comunidade])
+                imageUrl: dataForm.get('image'),
+                creatorSlug: githubUser,
+              }
+              if(comunidade.title === '' || comunidade.imageUrl === '' || !comunidade.imageUrl.includes('http')){
+                alert('Insira um Nome e uma URL válida')
+                return;
+              }
+              fetch('/api/comunidades', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(comunidade) // Sempre temos que converter o objeto
+              })
+              .then(async (response) =>{
+                  const dados = await response.json()
+                  const comunidade = dados.newRecord;
+                  setComunidades([...comunidades, comunidade])
+                  console.log(dados)
+              })
+
             }}>
               <div>
-                <input
+                <input id="title"
                   placeholder="Qual vai ser o nome da sua comunidade?"
                   name="title"
                   aria-label="Qual vai ser o nome da sua comunidade?"
@@ -125,7 +165,7 @@ export default function Home() {
                 />
               </div>
               <div>
-                <input
+                <input id="image"
                   placeholder="Coloque uma URL para usarmos de capa"
                   name="image"
                   aria-label="Coloque uma URL para usarmos de capa"
@@ -156,4 +196,43 @@ export default function Home() {
       </MainGrid>
     </>
   )
+}
+
+
+export async function getServerSideProps(context) {
+  const redirect = () => {
+    return {
+        redirect: {
+        destination: '/login',
+        permanent: false,
+    }
+  }
+};
+  const cookies = nookies.get(context);
+  const token = cookies.USER_TOKEN;
+
+  if(!token)
+  {
+    return redirect();
+  }
+
+  const { githubUser } = jwt.decode(token)
+  const isAuthenticated = await fetch(`https://api.github.com/users/${githubUser}`).then( async (resposta) => {
+      const resultado = await resposta.json();
+      console.log(resultado.message)
+      return resultado.message === 'Not Found' ? false : true 
+  })
+
+  if(!isAuthenticated)
+  {
+     
+    return redirect(); 
+  }
+
+
+  return {
+    props: {
+      githubUser: githubUser,
+    }, // will be passed to the page component as props
+  }
 }
