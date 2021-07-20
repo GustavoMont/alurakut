@@ -57,11 +57,11 @@ export default function Home(props) {
   } 
   const friendsList = (item) => {
     return (
-      <li key={item}>
-        <a href={`/users/${item}`} key={item}>
-          <img src={`https://github.com/${item}.png`} />
+      <li key={item.id}>
+        <a href={`/users/${item.login}`}>
+          <img src={`https://github.com/${item.login}.png`} />
           <div className="spanBG">
-            <span>{item}</span>
+            <span>{item.login}</span>
           </div>
         </a>
       </li>
@@ -75,19 +75,13 @@ export default function Home(props) {
   }])
   
   //const githubUser = 'GustavoMont'
-  const misAmi =
-    [
-      'omariosouto',
-      'filipedeschamps',
-      'juunegreiros',
-      'peas',
-      'felipefialho',
-      'marcobrunodev'
-    ]
+  const [amigos, setAmigos] = React.useState([])
+
+
     const [seguidores, setSeguidores] = React.useState([])
     
     React.useEffect(() => {
-      fetch('https://api.github.com/users/gustavomont/followers')
+      fetch(`https://api.github.com/users/${githubUser}/followers`)
       .then( respostaServidor => respostaServidor.json())
       .then( respostaConvertida => {setSeguidores(respostaConvertida)})
 
@@ -112,6 +106,12 @@ export default function Home(props) {
         const allCommunities = respostaCovertida.data.allCommunities
         setComunidades(allCommunities)
       })
+
+      fetch(`https://api.github.com/users/${githubUser}/following`).then(async (resposta) => {
+      const amigos = await resposta.json();
+        setAmigos(amigos)
+  });
+
     }, [])
   return (
     <>
@@ -183,7 +183,7 @@ export default function Home(props) {
           </ProfileRelationsBoxWrapper>
           
           <ProfileRelationsBoxWrapper>
-            <RelationList title={`Pessoas da Comunidade`} content={friendsList} list={misAmi} />
+            <RelationList title={`Pessoas da Comunidade`} content={friendsList} list={amigos} />
           </ProfileRelationsBoxWrapper>
 
           <ProfileRelationsBoxWrapper>
